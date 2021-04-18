@@ -198,3 +198,5 @@ Thumbs.db
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,python
 
 data/*
+datasets/*
+logs/*
