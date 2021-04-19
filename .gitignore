@@ -200,3 +200,4 @@ Thumbs.db
 data/*
 datasets/*
 logs/*
+*.pkl
