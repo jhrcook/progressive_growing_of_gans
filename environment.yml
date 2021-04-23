@@ -1,0 +1,15 @@
+name: pggan
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - defaults
+dependencies:
+  - python=3.6
+  - tensorflow-gpu=1.15
+  - numpy
+  - scipy
+  - moviepy
+  - Pillow
+  - lmdb
+  - opencv
