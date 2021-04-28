@@ -10,10 +10,12 @@ import time
 import re
 import bisect
 from collections import OrderedDict
+
 import numpy as np
 import tensorflow as tf
 import scipy.ndimage
 import scipy.misc
+import cv2
 
 import config
 import misc
@@ -118,7 +120,7 @@ def generate_training_video(run_id, duration_sec=20.0, time_warp=1.5, mp4=None, 
         if png_cache[0] == png:
             img = png_cache[1]
         else:
-            img = scipy.misc.imread(png)
+            img = cv2.imread(png)  # img = scipy.misc.imread(png)
             while img.shape[1] > 1920 or img.shape[0] > 1080:
                 img = img.astype(np.float32).reshape(img.shape[0]//2, 2, img.shape[1]//2, 2, -1).mean(axis=(1,3))
             png_cache[:] = [png, img]
