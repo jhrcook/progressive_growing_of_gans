@@ -3,11 +3,10 @@
 # Run the training of the Progressive Growing of GAN on O2 using GPUs.
 
 #SBATCH -c 2
-#SBATCH -p short
-#SBATCH -t 0-12:00
-#SBATCH --mem 32G
+#SBATCH -t 1-15:50
+#SBATCH --mem 24G
 #SBATCH -p gpu
-#SBATCH --gres=gpu:teslaV100:2
+#SBATCH --gres=gpu:teslaV100:4
 #SBATCH -o logs/%j.log
 #SBATCH -e logs/%j.log
 

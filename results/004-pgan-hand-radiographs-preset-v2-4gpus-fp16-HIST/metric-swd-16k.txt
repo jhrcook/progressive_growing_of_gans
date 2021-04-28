@@ -1,0 +1,31 @@
+Initializing TensorFlow...
+Running util_scripts.evaluate_metrics()...
+Logging output to results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/metric-swd-16k.txt
+Streaming data using dataset.TFRecordDataset...
+Dataset shape = [1, 1024, 1024]
+Dynamic range = [0, 255]
+Label size    = 0
+Initializing metrics.sliced_wasserstein.API...
+
+Snapshot  Time_eval   SWDx1e3_1024 SWDx1e3_512  SWDx1e3_256  SWDx1e3_128  SWDx1e3_64   SWDx1e3_32   SWDx1e3_16   SWDx1e3_avg
+---       ---         ---          ---          ---          ---          ---          ---          ---          ---
+Reals     Traceback (most recent call last):
+  File "train.py", line 285, in <module>
+    tfutil.call_func_by_name(**config.train)
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/tfutil.py", line 238, in call_func_by_name
+    return import_obj(func)(*args, **kwargs)
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/util_scripts.py", line 203, in evaluate_metrics
+    [obj.feed(mode, images) for obj in metric_objs]
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/util_scripts.py", line 203, in <listcomp>
+    [obj.feed(mode, images) for obj in metric_objs]
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 121, in feed
+    for lod, level in enumerate(generate_laplacian_pyramid(minibatch, len(self.resolutions))):
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 87, in generate_laplacian_pyramid
+    pyramid[-2] -= pyr_up(pyramid[-1])
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 81, in pyr_up
+    return scipy.ndimage.convolve(res, gaussian_filter[np.newaxis, np.newaxis, :, :] * 4.0, mode='mirror')
+  File "/home/jc604/.conda/envs/pggan/lib/python3.6/site-packages/scipy/ndimage/filters.py", line 802, in convolve
+    origin, True)
+  File "/home/jc604/.conda/envs/pggan/lib/python3.6/site-packages/scipy/ndimage/filters.py", line 629, in _correlate_or_convolve
+    _nd_image.correlate(input, weights, output, mode, cval, origins)
+KeyboardInterrupt

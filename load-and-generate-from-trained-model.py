@@ -6,15 +6,15 @@ import tensorflow as tf
 import PIL.Image
 from pathlib import Path
 
-# Initialize TensorFlow session.
-# tf.InteractiveSession()
 tf_session = tf.Session().__enter__()
-# tf_session.as_default()
 
-trained_model_path = "results/001-pgan-mnist-preset-v2-2gpus-fp16/network-final.pkl"
+trained_model_path = "results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/network-snapshot-010798.pkl"
 
 with open(trained_model_path, "rb") as file:
     G, D, Gs = pickle.load(file)
+
+print("Generator input shape:")
+print(Gs.input_shapes[0])
 
 latents = np.random.RandomState(1000).randn(100, *Gs.input_shapes[0][1:]) # 100 random latents
 
@@ -29,7 +29,7 @@ images = np.clip(np.rint((images + 1.0) / 2.0 * 255.0), 0.0, 255.0).astype(np.ui
 images = images.transpose(0, 2, 3, 1) # NCHW => NHWC
 
 # Save images as PNG.
-image_dir = Path("example-images", "mnist")
+image_dir = Path("example-images", "hands-001")
 if not image_dir.exists():
     image_dir.mkdir(parents=True)
 

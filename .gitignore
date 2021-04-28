@@ -201,3 +201,4 @@ data/*
 datasets/*
 logs/*
 *.pkl
+*.mp4
