@@ -1,0 +1,39 @@
+Evaluation: SWD
+Evaluation: FID
+Logging output to results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/metric-fid-10k.txt
+Streaming data using dataset.TFRecordDataset...
+Dataset shape = [1, 1024, 1024]
+Dynamic range = [0, 255]
+Label size    = 0
+Initializing metrics.frechet_inception_distance.API...
+Downloading Inception model
+
+Snapshot  Time_eval   FID
+---       ---         ---
+Reals     23s         -0.0000
+10798     20s         33.2388
+10698     17s         35.6854
+10597     17s         34.9657
+10497     17s         37.6345
+10396     17s         36.9068
+10296     16s         36.0354
+10195     16s         37.6612
+10095     17s         35.8155
+9994      16s         36.0367
+9894      17s         38.1724
+9793      17s         36.0073
+9693      17s         38.4530
+9592      17s         44.9901
+9492      16s         43.1058
+9391      17s         42.4606
+9291      17s         44.8791
+9191      16s         40.0296
+9090      17s         41.2028
+8981      16s         33.3263
+8781      17s         34.2084
+8581      17s         39.1951
+8381      17s         47.0938
+
+Evaluation: IS
+Evaluation: MS-SSIM
+done

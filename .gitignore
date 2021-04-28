@@ -202,3 +202,5 @@ datasets/*
 logs/*
 *.pkl
 *.mp4
+results/_inception/*
+results/_inception_fid/*

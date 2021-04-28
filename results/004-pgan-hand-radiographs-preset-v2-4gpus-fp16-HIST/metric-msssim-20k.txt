@@ -1,5 +1,7 @@
-Initializing TensorFlow...
-Running util_scripts.evaluate_metrics()...
+Evaluation: SWD
+Evaluation: FID
+Evaluation: IS
+Evaluation: MS-SSIM
 Logging output to results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/metric-msssim-20k.txt
 Streaming data using dataset.TFRecordDataset...
 Dataset shape = [1, 1024, 1024]
@@ -9,4 +11,28 @@ Initializing metrics.ms_ssim.API...
 
 Snapshot  Time_eval   MS-SSIM
 ---       ---         ---
-Reals
+Reals     1m 25s      0.6742
+10798     1m 24s      0.6891
+10698     1m 14s      0.6910
+10597     1m 13s      0.6951
+10497     1m 14s      0.6781
+10396     1m 15s      0.6928
+10296     1m 14s      0.6817
+10195     1m 13s      0.7007
+10095     1m 13s      0.6929
+9994      1m 13s      0.6827
+9894      1m 14s      0.6948
+9793      1m 14s      0.6921
+9693      1m 15s      0.6972
+9592      1m 18s      0.7079
+9492      1m 19s      0.6861
+9391      1m 18s      0.7065
+9291      1m 08s      0.6983
+9191      1m 06s      0.6958
+9090      1m 07s      0.6942
+8981      1m 02s      0.7039
+8781      1m 02s      0.6951
+8581      1m 02s      0.6807
+8381      1m 01s      0.6982
+
+done

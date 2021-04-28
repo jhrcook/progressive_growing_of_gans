@@ -1,5 +1,4 @@
-Initializing TensorFlow...
-Running util_scripts.evaluate_metrics()...
+Evaluation: SWD
 Logging output to results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/metric-swd-16k.txt
 Streaming data using dataset.TFRecordDataset...
 Dataset shape = [1, 1024, 1024]
@@ -9,23 +8,44 @@ Initializing metrics.sliced_wasserstein.API...
 
 Snapshot  Time_eval   SWDx1e3_1024 SWDx1e3_512  SWDx1e3_256  SWDx1e3_128  SWDx1e3_64   SWDx1e3_32   SWDx1e3_16   SWDx1e3_avg
 ---       ---         ---          ---          ---          ---          ---          ---          ---          ---
-Reals     Traceback (most recent call last):
-  File "train.py", line 285, in <module>
-    tfutil.call_func_by_name(**config.train)
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/tfutil.py", line 238, in call_func_by_name
-    return import_obj(func)(*args, **kwargs)
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/util_scripts.py", line 203, in evaluate_metrics
-    [obj.feed(mode, images) for obj in metric_objs]
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/util_scripts.py", line 203, in <listcomp>
-    [obj.feed(mode, images) for obj in metric_objs]
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 121, in feed
-    for lod, level in enumerate(generate_laplacian_pyramid(minibatch, len(self.resolutions))):
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 87, in generate_laplacian_pyramid
-    pyramid[-2] -= pyr_up(pyramid[-1])
-  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/metrics/sliced_wasserstein.py", line 81, in pyr_up
-    return scipy.ndimage.convolve(res, gaussian_filter[np.newaxis, np.newaxis, :, :] * 4.0, mode='mirror')
-  File "/home/jc604/.conda/envs/pggan/lib/python3.6/site-packages/scipy/ndimage/filters.py", line 802, in convolve
-    origin, True)
-  File "/home/jc604/.conda/envs/pggan/lib/python3.6/site-packages/scipy/ndimage/filters.py", line 629, in _correlate_or_convolve
-    _nd_image.correlate(input, weights, output, mode, cval, origins)
-KeyboardInterrupt
+Reals     47s         0.0000       0.0000       0.0000       0.0000       0.0000       0.0000       0.0000       0.0000
+Reals2    48s         19.8117      17.3833      20.4584      20.7913      18.9924      16.0513      12.8493      18.0483
+10798     48s         25.3166      22.8376      21.5491      19.7401      19.0167      17.2396      19.8235      20.7890
+10698     42s         21.5853      20.4584      21.6802      18.0935      21.1604      18.4829      20.8250      20.3265
+10597     41s         21.2682      23.5653      20.7768      23.4626      19.0375      19.8305      14.7420      20.3833
+10497     41s         23.0027      19.7576      22.1016      21.3473      24.6931      20.8100      17.7360      21.3497
+10396     41s         22.4070      20.6218      20.5592      25.7379      22.9917      22.1572      17.1797      21.6649
+10296     41s         22.4635      16.9805      19.1981      21.3409      19.8390      21.0225      16.8945      19.6770
+10195     41s         23.3441      20.5393      18.0174      20.4503      17.9257      19.2933      13.7437      19.0448
+10095     42s         24.6649      18.7588      17.9866      18.4277      18.2979      19.3488      14.9189      18.9148
+9994      41s         25.0232      22.3017      19.4493      21.8939      19.3931      19.6686      13.1785      20.1298
+9894      42s         23.0723      23.2124      19.8129      21.5460      16.8070      21.0124      16.9558      20.3456
+9793      41s         23.0410      21.4069      20.3875      18.6449      18.5394      19.3243      16.9893      19.7619
+9693      42s         22.6067      21.3770      22.0172      23.2100      19.3714      19.3113      15.2276      20.4459
+9592      42s         24.0735      23.6000      22.7301      20.9920      20.0851      20.0856      29.3889      22.9936
+9492      42s         29.8247      19.7172      21.2153      20.9591      17.8695      20.1486      14.0148      20.5356
+9391      42s         29.9286      19.3047      21.8307      17.7701      19.6028      21.1186      15.0002      20.6508
+9291      42s         29.9005      21.1521      22.5348      24.4919      21.1815      18.0016      15.6901      21.8503
+9191      43s         46.3495      20.2563      21.8359      21.9090      23.1848      20.8310      16.3600      24.3895
+9090      42s         46.5716      20.7895      21.7616      22.4402      18.3096      18.4836      18.0155      23.7674
+8981      42s         42.9895      19.9165      19.2820      25.7490      23.1722      20.2674      17.0389      24.0594
+8781      41s         44.8490      23.0423      19.9411      23.6520      19.1843      18.1721      16.1188      23.5657
+8581      42s         45.1884      19.5689      19.3108      24.4168      20.7083      17.6912      16.1512      23.2908
+8381      42s         83.2475      42.5491      32.3664      28.6605      18.5907      18.6847      17.8638      34.5661
+
+Evaluation: FID
+Logging output to results/004-pgan-hand-radiographs-preset-v2-4gpus-fp16-HIST/metric-fid-10k.txt
+Traceback (most recent call last):
+  File "./generate-and-evaluate-gan.py", line 127, in <module>
+    main(run_id)
+  File "./generate-and-evaluate-gan.py", line 107, in main
+    evaluate_metrics(run_id)
+  File "./generate-and-evaluate-gan.py", line 84, in evaluate_metrics
+    util_scripts.evaluate_metrics(run_id=run_id, log='metric-fid-10k.txt', metrics=['fid'], num_images=100, real_passes=1)
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/util_scripts.py", line 156, in evaluate_metrics
+    misc.set_output_log_file(log_file)
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/misc.py", line 136, in set_output_log_file
+    output_logger.set_log_file(filename, mode)
+  File "/n/data1/hms/dbmi/park/Cook/progressive_growing_of_gans/misc.py", line 94, in set_log_file
+    assert self.file is None
+AssertionError
