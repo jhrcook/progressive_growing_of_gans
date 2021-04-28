@@ -16,4 +16,4 @@ random_seed = 1000
 result_dir = results
 sched = {'minibatch_base': 16, 'minibatch_dict': {4: 512, 8: 256, 16: 128, 32: 64, 64: 32, 128: 16}, 'G_lrate_dict': {256: 0.0015, 512: 0.002, 1024: 0.003}, 'D_lrate_dict': {256: 0.0015, 512: 0.002, 1024: 0.003}, 'max_minibatch_per_gpu': {512: 16, 1024: 8}}
 tf_config = {'graph_options.place_pruned_graph': True}
-train = {'func': 'util_scripts.generate_interpolation_video', 'run_id': 4, 'grid_size': [1, 1], 'duration_sec': 60.0, 'smoothing_sec': 1.0}
+train = {'func': 'train.train_progressive_gan', 'resume_run_id': 4, 'resume_kimg': 10838.9, 'resume_time': 284220, 'total_kimg': 12000, 'save_weight_histograms': True}
