@@ -32,4 +32,4 @@ python3 --version
 which python3
 echo "==========================="
 
-python3 generate-and-evaluate-gan.py 4 --num-gpus 2
+python3 generate_and_evaluate_gan.py 4 --num-gpus 2

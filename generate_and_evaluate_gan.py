@@ -20,7 +20,9 @@ import train
 import util_scripts
 
 
-def generate_fake_images_with_input_vectors(run_id, num_pngs=1000):
+def generate_fake_images_with_input_vectors(
+    run_id, num_pngs=1000, input_array=None, output_dir=None
+):
     print(f"Generating {num_pngs} images")
     network_pkl = misc.locate_network_pkl(run_id, snapshot=None)
 
@@ -30,13 +32,23 @@ def generate_fake_images_with_input_vectors(run_id, num_pngs=1000):
     print(f"Loading network from {network_pkl}...")
     G, D, Gs = misc.load_network_pkl(run_id, snapshot=None)
 
-    result_subdir = misc.create_result_subdir(
-        config.result_dir, f"fake-images-{run_id}"
-    )
+    if output_dir is None:
+        result_subdir = misc.create_result_subdir(
+            config.result_dir, f"fake-images-{run_id}"
+        )
+    else:
+        result_subdir = output_dir
+
     latent_vectors = []
     for png_idx in range(num_pngs):
         print(f"Generating png {png_idx} / {num_pngs}...")
-        latents = misc.random_latents(1, Gs, random_state=random_state)
+        if input_array is not None:
+            latents = input_array[png_idx, :].reshape(1, -1)
+            print(f"[ JOSH ] latent dim: {latents.shape}")
+        else:
+            latents = misc.random_latents(1, Gs, random_state=random_state)
+            print(f"[ JOSH ] random latent dim: {latents.shape}")
+
         labels = np.zeros([latents.shape[0], 0], np.float32)
         latent_vectors.append(latents.copy().flatten())
         images = Gs.run(
@@ -51,12 +63,16 @@ def generate_fake_images_with_input_vectors(run_id, num_pngs=1000):
         )
         misc.save_image_grid(
             images,
-            os.path.join(result_subdir, "%s%06d.png" % (png_prefix, png_idx)),
+            os.path.join(
+                result_subdir, "{png_prefix}{png_idx:08d}.png" % (png_prefix, png_idx)
+            ),
             [0, 255],
             [1, 1],
         )
 
     latent_vectors = np.vstack(latent_vectors)
+    print("Dimensions of latent vectors:")
+    print(latent_vectors.shape)
     np.savetxt(os.path.join(result_subdir, "latent_vectors.txt"), latent_vectors)
     open(os.path.join(result_subdir, "_done.txt"), "wt").close()
     return None
@@ -69,6 +85,7 @@ def generate_interpolation_video(run_id, duration_sec):
     config.desc = original_desc
     return None
 
+
 def generate_training_video(run_id, duration_sec):
     original_desc = config.desc
     config.desc = f"training-video-{run_id}"
@@ -79,16 +96,40 @@ def generate_training_video(run_id, duration_sec):
 
 def evaluate_metrics(run_id):
     print("Evaluation: SWD")
-    util_scripts.evaluate_metrics(run_id=run_id, log="metric-swd-16k.txt", metrics=['swd'], num_images=16384, real_passes=2)
+    util_scripts.evaluate_metrics(
+        run_id=run_id,
+        log="metric-swd-16k.txt",
+        metrics=["swd"],
+        num_images=16384,
+        real_passes=2,
+    )
     reset_pggan_logger()
     print("Evaluation: FID")
-    util_scripts.evaluate_metrics(run_id=run_id, log="metric-fid-10k.txt", metrics=["fid"], num_images=50000, real_passes=1)
+    util_scripts.evaluate_metrics(
+        run_id=run_id,
+        log="metric-fid-10k.txt",
+        metrics=["fid"],
+        num_images=50000,
+        real_passes=1,
+    )
     reset_pggan_logger()
     print("Evaluation: IS")
-    util_scripts.evaluate_metrics(run_id=run_id, log='metric-is-50k.txt', metrics=['is'], num_images=50000, real_passes=1)
+    util_scripts.evaluate_metrics(
+        run_id=run_id,
+        log="metric-is-50k.txt",
+        metrics=["is"],
+        num_images=50000,
+        real_passes=1,
+    )
     reset_pggan_logger()
     print("Evaluation: MS-SSIM")
-    util_scripts.evaluate_metrics(run_id=run_id, log='metric-msssim-20k.txt', metrics=['msssim'], num_images=20000, real_passes=1)
+    util_scripts.evaluate_metrics(
+        run_id=run_id,
+        log="metric-msssim-20k.txt",
+        metrics=["msssim"],
+        num_images=20000,
+        real_passes=1,
+    )
     return None
 
 
@@ -97,14 +138,14 @@ def reset_pggan_logger():
     misc.init_output_logging()
 
 
-def main(run_id):
-    generate_fake_images_with_input_vectors(run_id, num_pngs=10)
+def main(run_id, num_images):
+    generate_fake_images_with_input_vectors(run_id, num_pngs=num_images)
 
     reset_pggan_logger()
     generate_interpolation_video(run_id, duration_sec=30.0)
 
-    #reset_pggan_logger()
-    #generate_training_video(run_id, duration_sec=10.0)
+    # reset_pggan_logger()
+    # generate_training_video(run_id, duration_sec=10.0)
 
     reset_pggan_logger()
     evaluate_metrics(run_id)
@@ -114,8 +155,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("run_id", type=int)
     parser.add_argument("--num-gpus", type=int, default=1)
+    parser.add_argument("--num-images", type=int, default=1000)
     args = parser.parse_args()
-    run_id = args.run_id
 
     config.num_gpus = args.num_gpus
     print(f"num. GPUS: {config.num_gpus}")
@@ -127,5 +168,5 @@ if __name__ == "__main__":
     os.environ.update(config.env)
     tfutil.init_tf(config.tf_config)
 
-    main(run_id)
+    main(args.run_id, num_images=args.num_images)
     print("done")
