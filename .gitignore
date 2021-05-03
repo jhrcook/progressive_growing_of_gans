@@ -204,3 +204,5 @@ logs/*
 *.mp4
 results/_inception/*
 results/_inception_fid/*
+.Rproj.user
+morehands-analysis/renv/library
