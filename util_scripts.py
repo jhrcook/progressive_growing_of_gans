@@ -10,6 +10,7 @@ import time
 import re
 import bisect
 from collections import OrderedDict
+import logging
 
 import numpy as np
 import tensorflow as tf
@@ -22,6 +23,16 @@ import misc
 import tfutil
 import train
 import dataset
+
+
+# JHC: Setup logger.
+c_handler = logging.StreamHandler()
+c_handler.setLevel(logging.INFO)
+c_format = logging.Formatter('[%(levelname)s]:%(funcName)s:%(lineno)d - %(message)s')
+c_handler.setFormatter(c_format)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(c_handler)
 
 # ----------------------------------------------------------------------------
 # Generate random images or image grids using a previously trained network.
@@ -89,6 +100,9 @@ def generate_interpolation_video(
     mp4_bitrate="16M",
     random_seed=1000,
     minibatch_size=8,
+    all_latents = None,
+    output_dir = None,
+    apply_smoothing_operations = True,
 ):
     network_pkl = misc.locate_network_pkl(run_id, snapshot)
     if mp4 is None:
@@ -103,11 +117,20 @@ def generate_interpolation_video(
     shape = [num_frames, np.prod(grid_size)] + Gs.input_shape[
         1:
     ]  # [frame, image, channel, component]
-    all_latents = random_state.randn(*shape).astype(np.float32)
-    all_latents = scipy.ndimage.gaussian_filter(
-        all_latents, [smoothing_sec * mp4_fps] + [0] * len(Gs.input_shape), mode="wrap"
-    )
-    all_latents /= np.sqrt(np.mean(np.square(all_latents)))
+
+    if all_latents is None:
+        logger.info("Generating random latents.")
+        all_latents = random_state.randn(*shape)
+    else:
+        logger.info(f"Using provided latent vectors (shape: {all_latents.shape}).")
+
+    all_latents = all_latents.astype(np.float32)
+
+    if apply_smoothing_operations:
+        all_latents = scipy.ndimage.gaussian_filter(
+            all_latents, [smoothing_sec * mp4_fps] + [0] * len(Gs.input_shape), mode="wrap"
+        )
+        all_latents /= np.sqrt(np.mean(np.square(all_latents)))
 
     # Frame generation func for moviepy.
     def make_frame(t):
@@ -134,7 +157,12 @@ def generate_interpolation_video(
     # Generate video.
     import moviepy.editor  # pip install moviepy
 
-    result_subdir = misc.create_result_subdir(config.result_dir, config.desc)
+    if output_dir is None:
+        result_subdir = misc.create_result_subdir(config.result_dir, config.desc)
+    else:
+        logger.info(f"Using output directory: {output_dir.as_posix()}")
+        result_subdir = output_dir
+
     moviepy.editor.VideoClip(make_frame, duration=duration_sec).write_videofile(
         os.path.join(result_subdir, mp4),
         fps=mp4_fps,
