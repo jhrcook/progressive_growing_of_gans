@@ -40,14 +40,13 @@ def generate_fake_images_with_input_vectors(
         result_subdir = output_dir
 
     latent_vectors = []
+    discriminator_values = []
     for png_idx in range(num_pngs):
         print(f"Generating png {png_idx} / {num_pngs}...")
         if input_array is not None:
             latents = input_array[png_idx, :].reshape(1, -1)
-            print(f"[ JOSH ] latent dim: {latents.shape}")
         else:
             latents = misc.random_latents(1, Gs, random_state=random_state)
-            print(f"[ JOSH ] random latent dim: {latents.shape}")
 
         labels = np.zeros([latents.shape[0], 0], np.float32)
         latent_vectors.append(latents.copy().flatten())
@@ -61,11 +60,12 @@ def generate_fake_images_with_input_vectors(
             out_shrink=1,
             out_dtype=np.uint8,
         )
+        scaled_images = (images - 127.5) / 127.5
+        D_pred = D.run(scaled_images, resolution=1024)
+        discriminator_values.append(D_pred[0][0])
         misc.save_image_grid(
             images,
-            os.path.join(
-                result_subdir, "{png_prefix}{png_idx:08d}.png" % (png_prefix, png_idx)
-            ),
+            os.path.join(result_subdir, f"{png_prefix}{png_idx:08d}.png"),
             [0, 255],
             [1, 1],
         )
@@ -74,6 +74,10 @@ def generate_fake_images_with_input_vectors(
     print("Dimensions of latent vectors:")
     print(latent_vectors.shape)
     np.savetxt(os.path.join(result_subdir, "latent_vectors.txt"), latent_vectors)
+    np.savetxt(
+        os.path.join(result_subdir, "discriminator_values.txt"),
+        np.hstack(discriminator_values),
+    )
     open(os.path.join(result_subdir, "_done.txt"), "wt").close()
     return None
 
@@ -94,43 +98,48 @@ def generate_training_video(run_id, duration_sec):
     return None
 
 
-def evaluate_metrics(run_id):
-    print("Evaluation: SWD")
-    util_scripts.evaluate_metrics(
-        run_id=run_id,
-        log="metric-swd-16k.txt",
-        metrics=["swd"],
-        num_images=16384,
-        real_passes=2,
-    )
-    reset_pggan_logger()
-    print("Evaluation: FID")
-    util_scripts.evaluate_metrics(
-        run_id=run_id,
-        log="metric-fid-10k.txt",
-        metrics=["fid"],
-        num_images=50000,
-        real_passes=1,
-    )
-    reset_pggan_logger()
-    print("Evaluation: IS")
-    util_scripts.evaluate_metrics(
-        run_id=run_id,
-        log="metric-is-50k.txt",
-        metrics=["is"],
-        num_images=50000,
-        real_passes=1,
-    )
-    reset_pggan_logger()
-    print("Evaluation: MS-SSIM")
-    util_scripts.evaluate_metrics(
-        run_id=run_id,
-        log="metric-msssim-20k.txt",
-        metrics=["msssim"],
-        num_images=20000,
-        real_passes=1,
-    )
-    return None
+def evaluate_metrics(run_id, metric_name):
+    if metric_name == "swd":
+        print("Evaluation: SWD")
+        util_scripts.evaluate_metrics(
+            run_id=run_id,
+            log="metric-swd-16k.txt",
+            metrics=["swd"],
+            num_images=16384,
+            real_passes=2,
+        )
+        return None
+    elif metric_name == "fid":
+        print("Evaluation: FID")
+        util_scripts.evaluate_metrics(
+            run_id=run_id,
+            log="metric-fid-10k.txt",
+            metrics=["fid"],
+            num_images=50000,
+            real_passes=1,
+        )
+        return None
+    elif metric_name == "is":
+        print("Evaluation: IS")
+        util_scripts.evaluate_metrics(
+            run_id=run_id,
+            log="metric-is-50k.txt",
+            metrics=["is"],
+            num_images=50000,
+            real_passes=1,
+        )
+    elif metric_name == "msssim":
+        print("Evaluation: MS-SSIM")
+        util_scripts.evaluate_metrics(
+            run_id=run_id,
+            log="metric-msssim-20k.txt",
+            metrics=["msssim"],
+            num_images=20000,
+            real_passes=1,
+        )
+        return None
+    else:
+        raise Exception(f"Unknown metric '{metric_name}'")
 
 
 def reset_pggan_logger():
@@ -138,17 +147,20 @@ def reset_pggan_logger():
     misc.init_output_logging()
 
 
-def main(run_id, num_images):
-    generate_fake_images_with_input_vectors(run_id, num_pngs=num_images)
+def main(run_id, num_images, video_length, eval_metric):
+    if num_images > 0:
+        generate_fake_images_with_input_vectors(run_id, num_pngs=num_images)
 
-    reset_pggan_logger()
-    generate_interpolation_video(run_id, duration_sec=30.0)
+    if video_length > 0:
+        reset_pggan_logger()
+        generate_interpolation_video(run_id, duration_sec=video_length)
 
     # reset_pggan_logger()
     # generate_training_video(run_id, duration_sec=10.0)
 
-    reset_pggan_logger()
-    evaluate_metrics(run_id)
+    if eval_metric != "none":
+        reset_pggan_logger()
+        evaluate_metrics(run_id, eval_metric)
 
 
 if __name__ == "__main__":
@@ -156,6 +168,8 @@ if __name__ == "__main__":
     parser.add_argument("run_id", type=int)
     parser.add_argument("--num-gpus", type=int, default=1)
     parser.add_argument("--num-images", type=int, default=1000)
+    parser.add_argument("--video-length", type=int, default=120)
+    parser.add_argument("--eval-metric", type=str, default="none")
     args = parser.parse_args()
 
     config.num_gpus = args.num_gpus
@@ -168,5 +182,5 @@ if __name__ == "__main__":
     os.environ.update(config.env)
     tfutil.init_tf(config.tf_config)
 
-    main(args.run_id, num_images=args.num_images)
+    main(args.run_id, num_images=args.num_images, video_length=args.video_length, eval_metric=args.eval_metric)
     print("done")
