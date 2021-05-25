@@ -103,9 +103,9 @@ def evaluate_metrics(run_id, metric_name):
         print("Evaluation: SWD")
         util_scripts.evaluate_metrics(
             run_id=run_id,
-            log="metric-swd-16k.txt",
+            log="metric-swd-1k.txt",
             metrics=["swd"],
-            num_images=16384,
+            num_images=1000,
             real_passes=2,
         )
         return None
@@ -115,27 +115,27 @@ def evaluate_metrics(run_id, metric_name):
             run_id=run_id,
             log="metric-fid-10k.txt",
             metrics=["fid"],
-            num_images=50000,
-            real_passes=1,
+            num_images=10000,
+            real_passes=2,
         )
         return None
     elif metric_name == "is":
         print("Evaluation: IS")
         util_scripts.evaluate_metrics(
             run_id=run_id,
-            log="metric-is-50k.txt",
+            log="metric-is-5k.txt",
             metrics=["is"],
-            num_images=50000,
-            real_passes=1,
+            num_images=5000,
+            real_passes=2,
         )
     elif metric_name == "msssim":
         print("Evaluation: MS-SSIM")
         util_scripts.evaluate_metrics(
             run_id=run_id,
-            log="metric-msssim-20k.txt",
+            log="metric-msssim-5k.txt",
             metrics=["msssim"],
-            num_images=20000,
-            real_passes=1,
+            num_images=5000,
+            real_passes=2,
         )
         return None
     else:

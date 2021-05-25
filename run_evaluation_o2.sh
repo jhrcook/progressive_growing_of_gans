@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -c 1
-#SBATCH -t 1-00:00
-#SBATCH --mem 64G
+#SBATCH -t 1-12:00
+#SBATCH --mem 16G
 #SBATCH -p gpu
 #SBATCH --gres=gpu:teslaV100:2
 #SBATCH -o logs/%j.log
@@ -32,4 +32,4 @@ python3 --version
 which python3
 echo "==========================="
 
-python3 generate_and_evaluate_gan.py 4 --num-gpus 2 --num-images -1 --video-length -1 --eval-metric "is"
+python3 generate_and_evaluate_gan.py 4 --num-gpus 2 --num-images -1 --video-length -1 --eval-metric "msssim"

@@ -3,7 +3,7 @@
 # Run the training of the Progressive Growing of GAN on O2 using GPUs.
 
 #SBATCH -c 2
-#SBATCH -t 1-15:50
+#SBATCH -t 1-14:00
 #SBATCH --mem 24G
 #SBATCH -p gpu
 #SBATCH --gres=gpu:teslaV100:4
@@ -12,6 +12,7 @@
 
 module load gcc conda2
 
+# 0-20:00
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
